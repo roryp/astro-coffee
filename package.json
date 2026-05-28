@@ -1,0 +1,9 @@
+{
+  "name": "astro-coffee",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Tiny single-page site for the Copilot desktop app demo.",
+  "scripts": {
+    "dev": "bunx serve -l 5173 ."
+  }
+}
