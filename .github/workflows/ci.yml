@@ -19,19 +19,24 @@ jobs:
           echo "ok"
 
   lint:
-    # Non-required check. Greps styles.css for common CSS property typos
-    # (e.g. `colur:` instead of `color:`). The stylesheet PR
-    # (`feat/add-stylesheet`) is seeded with one such typo, so its PR
-    # surfaces a red check the moment it opens. Other branches don't ship
-    # styles.css, so this job no-ops (skipped on the seed-time pass).
+    # Non-required check. Only lint styles.css when that file is part of
+    # the pull request, so unrelated PRs don't fail on typos already on
+    # the base branch.
     name: lint
     runs-on: ubuntu-latest
     timeout-minutes: 2
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: CSS property check
         run: |
+          merge_base=$(git merge-base "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}")
+          if ! git diff --name-only "$merge_base" "${{ github.event.pull_request.head.sha }}" -- styles.css | grep -q '^styles\.css$'; then
+            echo "styles.css not changed in this PR - skipping lint"
+            exit 0
+          fi
           if [ ! -f styles.css ]; then
             echo "no styles.css on this branch - skipping lint"
             exit 0
