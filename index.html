@@ -4,16 +4,32 @@
     <meta charset="utf-8" />
     <title>Astro Coffee</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      (() => {
+        const storageKey = "astro-coffee-theme";
+        const savedTheme = localStorage.getItem(storageKey);
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        const theme = savedTheme === "light" || savedTheme === "dark" ? savedTheme : systemTheme;
+
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header>
-      <h1>Astro Coffee</h1>
-      <p>Specialty beans, slow-roasted, hand-delivered.</p>
+    <header class="site-header">
+      <div>
+        <h1>Astro Coffee</h1>
+        <p>Specialty beans, slow-roasted, hand-delivered.</p>
+      </div>
     </header>
     <main>
       <section>
-        <h2>This week's roast</h2>
+        <div class="section-heading">
+          <h2>This week's roast</h2>
+          <button class="theme-toggle" type="button">Dark mode</button>
+        </div>
         <p>Ethiopian Yirgacheffe &mdash; bright, floral, citrus finish.</p>
       </section>
       <section>
@@ -24,5 +40,39 @@
     <footer>
       <p>&copy; 2026 Astro Coffee.</p>
     </footer>
+    <script>
+      (() => {
+        const storageKey = "astro-coffee-theme";
+        const toggle = document.querySelector(".theme-toggle");
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        let hasExplicitTheme = localStorage.getItem(storageKey) === "light" || localStorage.getItem(storageKey) === "dark";
+        let currentTheme = document.documentElement.dataset.theme || (mediaQuery.matches ? "dark" : "light");
+
+        const syncTheme = (theme, persist) => {
+          currentTheme = theme;
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+          toggle.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+          if (persist) {
+            localStorage.setItem(storageKey, theme);
+            hasExplicitTheme = true;
+          }
+        };
+
+        syncTheme(currentTheme, false);
+
+        toggle.addEventListener("click", () => {
+          syncTheme(currentTheme === "dark" ? "light" : "dark", true);
+        });
+
+        mediaQuery.addEventListener("change", (event) => {
+          if (hasExplicitTheme) {
+            return;
+          }
+
+          syncTheme(event.matches ? "dark" : "light", false);
+        });
+      })();
+    </script>
   </body>
 </html>
