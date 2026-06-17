@@ -5,12 +5,59 @@
     <title>Astro Coffee</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="styles.css" />
+    <script>
+      // Apply saved or preferred theme before first paint to avoid flash
+      (function () {
+        var saved = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefersDark)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <header>
       <h1>Astro Coffee</h1>
       <p>Specialty beans, slow-roasted, hand-delivered.</p>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-live="polite">
+        ☀️ Light mode
+      </button>
     </header>
+    <script>
+      (function () {
+        var btn = document.getElementById('theme-toggle');
+
+        function getTheme() {
+          return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        }
+
+        function applyTheme(theme) {
+          if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            btn.textContent = '☀️ Light mode';
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+            btn.textContent = '🌙 Dark mode';
+          }
+          localStorage.setItem('theme', theme);
+        }
+
+        // Set initial button label to match the already-applied theme
+        applyTheme(getTheme());
+
+        btn.addEventListener('click', function () {
+          applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+        });
+
+        // Follow OS preference changes when user hasn't made a manual choice
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+          if (!localStorage.getItem('theme')) {
+            applyTheme(e.matches ? 'dark' : 'light');
+          }
+        });
+      })();
+    </script>
     <main>
       <section>
         <h2>This week's roast</h2>
