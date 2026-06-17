@@ -1,0 +1,43 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the site (paced for demo)
+        run: |
+          test -f index.html
+          echo "starting"
+          sleep 120
+          echo "ok"
+
+  lint:
+    # Non-required check. Greps styles.css for common CSS property typos
+    # (e.g. `colur:` instead of `color:`). The stylesheet PR
+    # (`feat/add-stylesheet`) is seeded with one such typo, so its PR
+    # surfaces a red check the moment it opens. Other branches don't ship
+    # styles.css, so this job no-ops (skipped on the seed-time pass).
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: CSS property check
+        run: |
+          if [ ! -f styles.css ]; then
+            echo "no styles.css on this branch - skipping lint"
+            exit 0
+          fi
+          if grep -nE '\bcolur\s*:|\bbacground\s*:|\bbordr\s*:' styles.css; then
+            echo "::error file=styles.css::CSS property typo detected (did you mean color/background/border?)"
+            exit 1
+          fi
+          echo "ok"
