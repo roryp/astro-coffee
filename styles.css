@@ -21,7 +21,7 @@ body {
 }
 
 header h1 {
-  colur: var(--accent);
+  color: var(--accent);
   margin-bottom: 0.25rem;
 }
 
