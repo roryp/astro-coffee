@@ -5,11 +5,25 @@
     <title>Astro Coffee</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="styles.css" />
+    <script>
+      const savedTheme = localStorage.getItem("astro-coffee-theme");
+      const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme =
+        savedTheme || (systemPrefersDark ? "dark" : "light");
+    </script>
   </head>
   <body>
     <header>
-      <h1>Astro Coffee</h1>
-      <p>Specialty beans, slow-roasted, hand-delivered.</p>
+      <div class="header-content">
+        <div class="heading-group">
+          <h1>Astro Coffee</h1>
+          <p>Specialty beans, slow-roasted, hand-delivered.</p>
+        </div>
+        <button class="theme-toggle" type="button" aria-label="Switch to dark mode">
+          <span class="theme-toggle-icon" aria-hidden="true">Dark</span>
+          <span class="theme-toggle-label">Dark mode</span>
+        </button>
+      </div>
     </header>
     <main>
       <section>
@@ -24,5 +38,27 @@
     <footer>
       <p>&copy; 2026 Astro Coffee.</p>
     </footer>
+    <script>
+      const themeToggle = document.querySelector(".theme-toggle");
+      const themeToggleLabel = themeToggle.querySelector(".theme-toggle-label");
+
+      function updateThemeToggle(theme) {
+        const isDark = theme === "dark";
+        themeToggle.setAttribute(
+          "aria-label",
+          isDark ? "Switch to light mode" : "Switch to dark mode"
+        );
+        themeToggleLabel.textContent = isDark ? "Light mode" : "Dark mode";
+      }
+
+      updateThemeToggle(document.documentElement.dataset.theme);
+      themeToggle.addEventListener("click", () => {
+        const nextTheme =
+          document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = nextTheme;
+        localStorage.setItem("astro-coffee-theme", nextTheme);
+        updateThemeToggle(nextTheme);
+      });
+    </script>
   </body>
 </html>
