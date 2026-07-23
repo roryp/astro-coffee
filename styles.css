@@ -1,8 +1,23 @@
 :root {
+  color-scheme: light;
   --bg: #faf6f1;
+  --surface: #fff;
   --fg: #2a1f17;
   --accent: #b8642f;
   --muted: #6b5d52;
+  --border: #dfd1c5;
+  --shadow: 0 1px 3px rgb(0 0 0 / 6%);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #211b19;
+  --surface: #302522;
+  --fg: #f4e9dc;
+  --accent: #e3a071;
+  --muted: #c7b5a8;
+  --border: #59463c;
+  --shadow: 0 1rem 2.5rem rgb(0 0 0 / 25%);
 }
 
 * {
@@ -18,10 +33,18 @@ body {
   max-width: 720px;
   margin-inline: auto;
   line-height: 1.55;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.header-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
 }
 
 header h1 {
-  colur: var(--accent);
+  color: var(--accent);
   margin-bottom: 0.25rem;
 }
 
@@ -30,12 +53,55 @@ header p {
   margin-top: 0;
 }
 
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.6rem 0.85rem;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+}
+
+.theme-toggle-icon {
+  display: inline-block;
+  width: 1.25rem;
+  overflow: hidden;
+  color: var(--accent);
+  font-size: 0;
+}
+
+.theme-toggle-icon::before {
+  content: "\263e";
+  font-size: 1.1rem;
+}
+
+:root[data-theme="dark"] .theme-toggle-icon::before {
+  content: "\2600";
+}
+
+.theme-toggle:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
 main section {
   margin-block: 1.5rem;
-  padding: 1rem 1.25rem;
-  background: white;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 footer {
@@ -43,4 +109,17 @@ footer {
   color: var(--muted);
   font-size: 0.875rem;
   text-align: center;
+}
+
+@media (max-width: 38rem) {
+  .header-content {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .theme-toggle {
+    transition: none;
+  }
 }
